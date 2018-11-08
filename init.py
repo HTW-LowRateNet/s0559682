@@ -25,6 +25,7 @@ def readSerialLine():
 def initalConfig():
     cfgAT = "AT+CFG=433000000,20,6,12,1,1,0,0,0,0,3000,8,4"
     sio.write(cfgAT + '\r\n')
+    # blablabla
     rxAT = "AT+RX"
     sio.write(rxAT + '\r\n')
 
