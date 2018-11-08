@@ -27,7 +27,13 @@ def initalConfig():
     sio.write(cfgAT + '\r\n')
     # blablabla
     rxAT = "AT+RX"
-    sio.write(rxAT + '\r\n')
+    rn = "\r\n"
+    ownAddr = "AT + ADDR = 6969"
+    destAddr = "AT + DEST = 2121"
+    sio.write(rxAT + rn)
+    sio.write(ownAddr + rn)
+    sio.write(destAddr + rn)
+    saveAT = "AT + SAVE"
 
 #initalConfig()
 start_new_thread(readSerialLine,())
