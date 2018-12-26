@@ -3,6 +3,7 @@ package technikMobiler.controller;
 import com.pi4j.io.serial.Serial;
 import com.pi4j.io.serial.SerialFactory;
 import com.pi4j.util.Console;
+import technikMobiler.concurrent.CheckingMessageDB;
 import technikMobiler.concurrent.IncomingMessageListener;
 import technikMobiler.concurrent.UserInputListener;
 import technikMobiler.config.SerialConfigurator;
@@ -59,8 +60,10 @@ public class NetworkController {
         // create and register the serial data listener
         Thread incomingMessageListener = new Thread(new IncomingMessageListener(serial, senderController));
         Thread userInputListener = new Thread(new UserInputListener(senderController));
+        Thread checkingMessageDB = new Thread(new CheckingMessageDB());
         incomingMessageListener.start();
         userInputListener.start();
+        checkingMessageDB.start();
 
         // start initial congfiguration of module and set own temporary address
         senderController.configureModule();
@@ -80,9 +83,9 @@ public class NetworkController {
                     Thread.sleep(10000);
                 } else {
                     System.out.println("Missing Coordinator.");
-                    for (int i = 0; i < 4; i++) {
+                    for (int i = 0; i < 2; i++) {
                         senderController.discoverCoordinator();
-                        Thread.sleep(8000);
+                        Thread.sleep(5000);
                         if(senderController.isCoordinatorPresent()) {
                             break;
                         }

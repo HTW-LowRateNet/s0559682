@@ -3,6 +3,7 @@ package technikMobiler.module;
 import technikMobiler.bean.Message;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class MessageDB {
@@ -26,5 +27,11 @@ public class MessageDB {
         this.msgDB.remove(key);
     }
 
+    protected ConcurrentHashMap<String, Message> getDB() {
+        return this.msgDB;
+    }
 
+    protected void clearDB() {
+        this.msgDB.clear();
+    }
 }

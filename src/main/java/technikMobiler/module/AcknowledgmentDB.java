@@ -16,11 +16,21 @@ class AcknowledgmentDB {
 
      protected boolean checkData(Integer key) {
          Integer data = this.ackDB.get(key);
-         return data == null;
+         System.out.println("checkData, Data: " + data + " key: " + key);
+         System.out.println("success:" + data != null);
+         return data != null;
      }
 
      protected void removeData(Integer key) {
          this.ackDB.remove(key);
+     }
+
+     protected ConcurrentHashMap<Integer, Integer> getAllData() {
+         return this.ackDB;
+     }
+
+     protected void clearDB() {
+         this.ackDB.clear();
      }
 
 

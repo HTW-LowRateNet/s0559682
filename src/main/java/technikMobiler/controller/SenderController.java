@@ -63,8 +63,8 @@ public class SenderController {
                 coordinatorDiscoveryMessage = new Message(MessageCode.CDIS, generateMessageID(), this.multihopBean.getPermanentAddress(), "FFFF", "Is there a coordinator");
             }
             System.out.println("discoveryCoordinator message " + coordinatorDiscoveryMessage);
-            sendMessageHelper(coordinatorDiscoveryMessage);
             Thread.sleep(2000);
+            sendMessageHelper(coordinatorDiscoveryMessage);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -74,8 +74,8 @@ public class SenderController {
     public synchronized void sendCoordinatorKeepAlive() {
         try {
             Message imTheCaptainMessage = new Message(MessageCode.ALIV, generateMessageID(), this.multihopBean.getPermanentAddress(),"FFFF" , "I am the coordinator");
-            sendMessageHelper(imTheCaptainMessage);
             Thread.sleep(5000);
+            sendMessageHelper(imTheCaptainMessage);
         } catch (InterruptedException e) {
             System.err.println(e.getCause());
         }
@@ -84,18 +84,20 @@ public class SenderController {
     public void sendAddressAcknowledgment() {
         try {
             Message ackMessage = new Message(MessageCode.AACK, generateMessageID(), this.multihopBean.getPermanentAddress(),"FFFF", null);
-            sendMessageHelper(ackMessage);
             Thread.sleep(3000);
+            sendMessageHelper(ackMessage);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
     }
 
-    public void sendPermanentAddress(String address, String tempAddressFromNode) {
+    public void sendPermanentAddress(Integer address, String tempAddressFromNode) {
         try {
-            String addresses = address;
-            Message messageWithPermanentAddres = new Message(MessageCode.ADDR, generateMessageID(), this.multihopBean.getPermanentAddress(), tempAddressFromNode, addresses);
+            String hexAddress = Integer.toHexString(address);
+            hexAddress = AddressHelper.convertToPaddedHex(hexAddress);
+            System.out.println("New Address is: " + hexAddress);
+            Message messageWithPermanentAddres = new Message(MessageCode.ADDR, generateMessageID(), this.multihopBean.getPermanentAddress(), tempAddressFromNode, hexAddress);
             Thread.sleep(2000);
             sendMessageHelper(messageWithPermanentAddres);
         } catch (InterruptedException e) {
@@ -104,16 +106,27 @@ public class SenderController {
 
     }
 
+    public void sendNetworkReset() {
+        try {
+            Message netWorkReset = new Message(MessageCode.NRST, generateMessageID(), this.multihopBean.getTempAddress(), "FFFF", null);
+            Thread.sleep(3000);
+            this.sendMessageHelper(netWorkReset);
+            System.out.println("Network has to be resetted");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public void requestPermanentAddress() {
         try {
             Message giveMePermanentAddress = new Message(MessageCode.ADDR, generateMessageID(), this.multihopBean.getTempAddress(), "FFFF", null);
-            this.sendMessageHelper(giveMePermanentAddress);
             Thread.sleep(3000);
+            this.sendMessageHelper(giveMePermanentAddress);
+            System.out.println("Requesting a permanent Address for myself from Coordiantor");
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
     }
 
     public void forwardingMessage(Message message) {

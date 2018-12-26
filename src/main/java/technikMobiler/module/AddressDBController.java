@@ -18,22 +18,26 @@ public class AddressDBController {
     }
 
 
-    public void addAddress(int i) {
+    public void addAddress(Integer i) {
         this.addressDb.addData(i);
     }
 
 
-    public int getAddress(int i) {
+    public Integer getAddress(Integer i) {
         return this.addressDb.getData(i);
     }
 
-    public boolean deleteAddress(int i) {
+    public boolean deleteAddress(Integer i) {
         return this.addressDb.deleteData(i);
     }
 
 
-    public int getLastAddress() {
+    public Integer getLastAddress() {
         return this.addressDb.getLasEntry();
+    }
+
+    public void deleteAllAdresses() {
+        this.addressDb.clearDB();
     }
 
 }

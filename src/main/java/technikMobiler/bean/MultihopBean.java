@@ -4,6 +4,8 @@ import technikMobiler.module.AcknowledgmentDBController;
 import technikMobiler.module.AddressDBController;
 import technikMobiler.module.MessageDBController;
 
+import java.util.Date;
+
 public class MultihopBean {
 
     private boolean isCoordinator;
@@ -30,20 +32,43 @@ public class MultihopBean {
 
 
     public void handleAACKRequestAsCoordinator(Message message) {
-        Integer permanentAddress = Integer.valueOf(message.getSender());
-        boolean success = this.acknowledgmentDBController.checkAddress(permanentAddress);
-        if(success) {
-            this.acknowledgmentDBController.removeAddress(permanentAddress);
+        try {
+            Integer permanentAddress = Integer.parseInt(message.getSender(), 16);
+            System.out.println("die permanente Addresse im AACK Req: "  + permanentAddress);
+            boolean success = this.acknowledgmentDBController.checkAddress(permanentAddress);
+            if(success) {
+                this.acknowledgmentDBController.removeAddress(permanentAddress);
+                this.addressDBController.addAddress(permanentAddress);
+                System.out.println("Permanent address: " + permanentAddress + " saved");
+            } else {
+                System.out.println(permanentAddress + " couldn't be saved since it never got created");
+            }
+
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
-        this.addressDBController.addAddress(permanentAddress);
+
     }
 
     public void handleADDRRequestAsCoordinator(Integer permADDR, Integer tempAddr) {
         this.acknowledgmentDBController.addAddressPair(permADDR, tempAddr);
+        this.acknowledgmentDBController.printAddresses();
     }
 
     public boolean checkIfMessageIsTheSame(Message message) {
         return this.messageDBController.checkMessageIfItsTheSame(message);
+    }
+
+    public void safeMessageIntoDB(Message message) {
+        Date date = new Date();
+        message.setArrivalTimeStamp(date.getTime());
+        this.messageDBController.addMessage(message);
+    }
+
+
+    public void printMessageDB() {
+        this.messageDBController.printDB();
     }
 
     public boolean isCoordinator() {
@@ -68,6 +93,15 @@ public class MultihopBean {
 
     public void setPermanentAddress(String permanentAddress) {
         this.permanentAddress = permanentAddress;
+    }
+
+    public void resetBean() {
+        this.isCoordinator = false;
+        this.tempAddress = "xyz";
+        this.permanentAddress = null;
+        this.messageDBController.deleteAllMessages();
+        this.acknowledgmentDBController.clearACKDB();
+        this.addressDBController.deleteAllAdresses();
     }
 }
 

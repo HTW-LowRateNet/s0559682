@@ -8,6 +8,8 @@ public class Message {
     private int currentHops = 0;
     private String sender;
     private String targetAddress;
+    private long arrivalTimeStamp;
+    private long currentTimeStamp;
 
 
     public Message(String[] message) {
@@ -18,6 +20,8 @@ public class Message {
         this.sender = message[4];
         this.targetAddress = message[5];
         this.payload = message[6];
+        this.arrivalTimeStamp = 0;
+        this.currentTimeStamp = 0;
 
 
     }
@@ -29,6 +33,8 @@ public class Message {
         this.payload = payload;
         this.sender = sender;
         this.targetAddress = targetAddress;
+        this.arrivalTimeStamp = 0;
+        this.currentTimeStamp = 0;
     }
 
     @Override
@@ -91,5 +97,21 @@ public class Message {
 
     public void setTargetAddress(String targetAddress) {
         this.targetAddress = targetAddress;
+    }
+
+    public long getArrivalTimeStamp() {
+        return arrivalTimeStamp;
+    }
+
+    public void setArrivalTimeStamp(long arrivalTimeStamp) {
+        this.arrivalTimeStamp = arrivalTimeStamp;
+    }
+
+    public long getCurrentTimeStamp() {
+        return currentTimeStamp;
+    }
+
+    public void setCurrentTimeStamp(long currentTimeStamp) {
+        this.currentTimeStamp = currentTimeStamp;
     }
 }

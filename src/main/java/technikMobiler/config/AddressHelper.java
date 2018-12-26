@@ -17,7 +17,7 @@ public class AddressHelper {
     private static int permanentAddressLowerBound = 0x0100;
     private static int permanentAddressUpperBound = 0xFFFE;
 
-    private final static int adder = 0x0001;
+    private final static int adder = 1;
 
 
     private static int AddressLowerBound = 0x0100;
@@ -40,9 +40,21 @@ public class AddressHelper {
 
 
     public static Integer createPermanentAddress () {
-        int lastSentAddress = addressDBController.getLastAddress();
+        Integer lastSentAddress = addressDBController.getLastAddress();
+        System.out.println("last address which was saved: " + Integer.toHexString(lastSentAddress));
         int newAddress = lastSentAddress + adder;
-        System.out.printf("New Address + %x\n",newAddress);
+//        String hex = Integer.toHexString(newAddress);
+//        String paddedHexString = convertToPaddedHex(hex);
+//        System.out.println("new Address " + paddedHexString);
         return newAddress;
+    }
+
+    public static String convertToPaddedHex(String hex) {
+        int length = 4;
+        int result = length - hex.length();
+        for(int i = 0; i < result; i++) {
+            hex = "0" + hex;
+        }
+        return hex;
     }
 }

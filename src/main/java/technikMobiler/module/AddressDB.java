@@ -5,23 +5,23 @@ import java.util.List;
 
 class AddressDB {
     private List<Integer> db;
-    private int lasEntry;
+    private Integer lasEntry;
 
 
     protected AddressDB() {
         this.db = new ArrayList<>();
-        this.lasEntry = 0x0100;
+        this.lasEntry = 256;
     }
 
-    protected void addData(int data) {
+    protected void addData(Integer data) {
         this.db.add(data);
         this.lasEntry = data;
     }
 
-    protected int getData(int data) {
+    protected Integer getData(Integer data) {
         int addr = -1;
         if(db.size() == 0) {
-            return -1;
+            return addr;
         }
         for(Integer i : this.db) {
             if(i == data) {
@@ -44,7 +44,11 @@ class AddressDB {
         return deleted;
     }
 
-    protected int getLasEntry() {
+    protected Integer getLasEntry() {
         return this.lasEntry;
+    }
+
+    protected void clearDB() {
+        this.db.clear();
     }
 }

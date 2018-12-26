@@ -2,6 +2,9 @@ package technikMobiler.module;
 
 import technikMobiler.bean.Message;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 public class MessageDBController {
 
     private static MessageDBController singleInstance = null;
@@ -39,10 +42,24 @@ public class MessageDBController {
 
     }
 
+    public void printDB() {
+        for(Map.Entry<String, Message> entry : this.messageDB.getDB().entrySet()) {
+            System.out.println("MessageDB: key: " + entry.getKey() + " value:" + entry.getValue().toString());
+        }
+    }
+
+    public ConcurrentHashMap<String, Message> getMessageDB() {
+        return this.messageDB.getDB();
+    }
+
 
 
     public void removeMessage(Message message) {
         this.messageDB.deleteData(message.getMessageId());
+    }
+
+    public void deleteAllMessages() {
+        this.messageDB.clearDB();
     }
 
 
