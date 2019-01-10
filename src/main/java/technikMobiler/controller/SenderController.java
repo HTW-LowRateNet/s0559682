@@ -17,7 +17,7 @@ public class SenderController {
     public static Boolean preparedToSend = false;
     private boolean tempAddress = false;
     private AddressDBController addressDBController;
-    private boolean coordinatorPresent = false;
+    private volatile boolean coordinatorPresent = false;
 
     public SenderController(Serial serial) {
         this.serial = serial;
@@ -238,7 +238,7 @@ public class SenderController {
         this.multihopBean = multihopBean;
     }
 
-    public boolean isCoordinatorPresent() {
+    public synchronized boolean isCoordinatorPresent() {
         return coordinatorPresent;
     }
 

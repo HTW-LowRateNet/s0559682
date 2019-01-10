@@ -73,6 +73,7 @@ public class NetworkController {
         // program
         while (console.isRunning()) {
             try {
+                System.out.println("Koordinatorstand: " + senderController.getMultihopBean().isCoordinator());
             if (senderController.getMultihopBean().isCoordinator()) {
                 senderController.sendCoordinatorKeepAlive();
                 System.out.println("");
@@ -83,12 +84,12 @@ public class NetworkController {
                     Thread.sleep(10000);
                 } else {
                     System.out.println("Missing Coordinator.");
-                    for (int i = 0; i < 2; i++) {
-                        senderController.discoverCoordinator();
-                        Thread.sleep(5000);
+                    for (int i = 0; i < 4; i++) {
                         if(senderController.isCoordinatorPresent()) {
                             break;
                         }
+                        senderController.discoverCoordinator();
+                        Thread.sleep(8000);
                     }
                     if(!senderController.isCoordinatorPresent()) {
                         this.senderController.setCoordinator();

@@ -97,7 +97,7 @@ public class MultihopBean {
 
     public void resetBean() {
         this.isCoordinator = false;
-        this.tempAddress = "xyz";
+        this.tempAddress = "0099";
         this.permanentAddress = null;
         this.messageDBController.deleteAllMessages();
         this.acknowledgmentDBController.clearACKDB();

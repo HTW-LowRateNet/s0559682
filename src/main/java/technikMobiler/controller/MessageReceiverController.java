@@ -40,16 +40,18 @@ public class MessageReceiverController {
                 newMessage[6] = temp[9];
                 Message message = new Message(newMessage);
                 System.out.println("Die reingekommenen Daten in message umgewandelt: " + message.toString());
-                if(!messageIsForMe(message)) {
-                    this.handleForwardingProcess(message);
+                if (message.getCode().equals("ALIV")){
+                    System.out.println("IM ALIVE BLOCK");
+                    this.handleALIVRequest();
+                } else if(!messageIsForMe(message)) {
+                    if(senderController.getMultihopBean().getPermanentAddress() != null) {
+                        System.out.println("Im forwarding block");
+                        this.handleForwardingProcess(message);
+                    }
                 } else {
                     if (message.getCode().equals("CDIS") && senderController.getMultihopBean().isCoordinator()){
                         System.out.println("Im CDIS BLOCK");
                         this.handleCDISRequest(message);
-                    }
-                    if (message.getCode().equals("ALIV")){
-                        System.out.println("IM ALIVE BLOCK");
-                        this.handleALIVRequest();
                     }
 
                     if(message.getCode().equals("MSSG")) {
@@ -114,7 +116,7 @@ public class MessageReceiverController {
             String tempAddr = this.senderController.getMultihopBean().getTempAddress();
             this.senderController.setPermanentAddress(message.getPayload());
             this.senderController.sendAddressAcknowledgment();
-            System.out.println("eigene adresse auf " + message.getPayload() + " gesetzt");
+            System.out.println("SET OWN PERMANENT ADDR " + message.getPayload());
         } else {
             System.out.println("Since I am coordinator I will send a new address");
             String tempAddressFromSomeNode = message.getSender();
