@@ -1,83 +1,102 @@
 package technikMobiler.controller;
 
 import technikMobiler.bean.Message;
-import technikMobiler.bean.MessageCode;
 import technikMobiler.config.AddressHelper;
-import technikMobiler.module.AddressDBController;
 
-public class MessageReceiverController {
+public class MessageController {
 
-    public static boolean gotExpectedAnswerFromModule = false;
+    public static boolean requestedAnAddress = false;
     private SenderController senderController;
+    public static int countForNewAddressrequest = 0;
 
 
-    public MessageReceiverController(SenderController senderController) {
+    public MessageController(SenderController senderController) {
         this.senderController = senderController;
     }
 
     public void parseIncoming(String data) {
+        countForNewAddressrequest = countForNewAddressrequest + 1;
+        if(countForNewAddressrequest == 100) {
+            requestedAnAddress = false;
+        }
             System.out.println("Daten die reingekommen sind: " + data);
-            if (data.contains("AT")){
-                if(data.contains("AT,OK")) {
-                    SenderController.preparedToSend = true;
-                    synchronized (NetworkController.lock1) {
-                        NetworkController.lock1.notify();
-                        //schreiben
-                    }
-                } if(data.contains("AT,SENDED")) {
-                    System.out.println("AT SENDED Block  " + data);
-                }
+            if(data == null) {
+                System.out.println("data was null");
             } else {
-                try {
-                String[] temp = data.split(",");
-                String[] newMessage = new String[7];
-                newMessage[0] = temp[3];
-                newMessage[1] = temp[4];
-                newMessage[2] = temp[5];
-                newMessage[3] = temp[6];
-                newMessage[4] = temp[7];
-                newMessage[5] = temp[8];
-                newMessage[6] = temp[9];
-                Message message = new Message(newMessage);
-                System.out.println("Die reingekommenen Daten in message umgewandelt: " + message.toString());
-                if (message.getCode().equals("ALIV")){
-                    System.out.println("IM ALIVE BLOCK");
-                    this.handleALIVRequest();
-                } else if(!messageIsForMe(message)) {
-                    if(senderController.getMultihopBean().getPermanentAddress() != null) {
-                        System.out.println("Im forwarding block");
-                        this.handleForwardingProcess(message);
+                if (data.contains("AT")){
+                    if(data.contains("AT,OK")) {
+                        SenderController.preparedToSend = true;
+                        synchronized (NetworkController.lock1) {
+                            NetworkController.lock1.notify();
+                            //schreiben
+                        }
+                    } if(data.contains("AT,SENDED")) {
+                        System.out.println("AT SENDED Block  " + data);
                     }
                 } else {
-                    if (message.getCode().equals("CDIS") && senderController.getMultihopBean().isCoordinator()){
-                        System.out.println("Im CDIS BLOCK");
-                        this.handleCDISRequest(message);
-                    }
+                    try {
+                        String[] temp = data.split(",");
+                        String[] newMessage = new String[7];
+                        newMessage[0] = temp[3];
+                        newMessage[1] = temp[4];
+                        newMessage[2] = temp[5];
+                        newMessage[3] = temp[6];
+                        newMessage[4] = temp[7];
+                        newMessage[5] = temp[8];
+                        newMessage[6] = temp[9];
+                        Message message = new Message(newMessage);
+                        System.out.println("Die reingekommenen Daten in message umgewandelt: " + message.toString());
+                        if (message.getCode().equals("ALIV")){
+                            System.out.println("IM ALIVE BLOCK");
+                            this.handleALIVRequest(message);
+                        } else if(!messageIsForMe(message)) {
+                            if(senderController.getMultihopBean().getPermanentAddress() != null) {
+                                System.out.println("Im forwarding block");
+                                this.handleForwardingProcess(message);
+                            } else {
+                                System.out.println("not allowed to forward");
+                            }
+                        } else {
+                            System.out.println("Im restlichen Block");
+                            if (message.getCode().equals("CDIS") && senderController.getMultihopBean().isCoordinator()){
+                                System.out.println("Im CDIS BLOCK");
+                                this.handleCDISRequest(message);
+                            }
 
-                    if(message.getCode().equals("MSSG")) {
-                        System.out.println("IM MSSG BLOCK");
-                        handleMSSGRequest(message);
-                    }
+                            if(message.getCode().equals("MSSG")) {
+                                System.out.println("IM MSSG BLOCK");
+                                handleMSSGRequest(message);
+                            }
 
-                    if(message.getCode().equals("ADDR")) {
-                        System.out.println("IM ADDR BLOCK");
-                        this.handleADDRRequest(message);
-                    }
+                            if(message.getCode().equals("ADDR")) {
+                                System.out.println("IM ADDR BLOCK");
+                                this.handleADDRRequest(message);
+                            }
 
-                    if(message.getCode().equals("AACK")) {
-                        System.out.println("IM AACK BLOCK");
-                        this.handleAACKRequest(message);
+                            if(message.getCode().equals("AACK")) {
+                                System.out.println("IM AACK BLOCK");
+                                this.handleAACKRequest(message);
+                            }
+
+                            if(message.getCode().equals("NRST")) {
+                                System.out.println("IM NRST BLOCK");
+                            }
+                        }
+                    } catch (ArrayIndexOutOfBoundsException e) {
+                        System.out.println(e.getCause());
+                        System.out.println(e.getMessage());
+                        e.printStackTrace();
+                        System.out.println("wrong data: " + data);
                     }
-                }
-                } catch (ArrayIndexOutOfBoundsException e) {
-                    System.out.println(e.getCause());
-                    System.out.println(e.getMessage());
-                    e.printStackTrace();
-                    System.out.println("wrong data: " + data);
                 }
             }
+
     }
 
+    private void handleNRSTRequest() {
+        requestedAnAddress = false;
+        this.resetNetwork();
+    }
 
     private void handleAACKRequest(Message message) {
        this.senderController.getMultihopBean().handleAACKRequestAsCoordinator(message);
@@ -88,17 +107,21 @@ public class MessageReceiverController {
         senderController.sendCoordinatorKeepAlive();
     }
 
-    private void handleALIVRequest() {
+    private void handleALIVRequest(Message message) {
         try {
             if(senderController.getMultihopBean().isCoordinator()) {
-                this.resetEveryThing();
+                this.resetNetwork();
                 senderController.sendNetworkReset();
 
             } else {
                 senderController.setCoordinatorPresent(true);
-                senderController.requestPermanentAddress();
                 System.out.println("I am a worker");
                 Thread.sleep(3000);
+                //handleForwardingProcess(message);
+                if(!requestedAnAddress) {
+                    senderController.requestPermanentAddress();
+                    requestedAnAddress = true;
+                }
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -138,7 +161,6 @@ public class MessageReceiverController {
         } else {
             return message.getTargetAddress().equals(this.senderController.getMultihopBean().getPermanentAddress());
         }
-
     }
 
     private void handleForwardingProcess(Message message) {
@@ -154,7 +176,7 @@ public class MessageReceiverController {
         }
     }
 
-    private void resetEveryThing() {
+    private void resetNetwork() {
         this.senderController.getMultihopBean().resetBean();
     }
 

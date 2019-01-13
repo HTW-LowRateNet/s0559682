@@ -30,13 +30,9 @@ package technikMobiler;
  */
 
 
-import com.pi4j.io.serial.*;
-import com.pi4j.util.CommandArgumentParser;
-import com.pi4j.util.Console;
 import technikMobiler.controller.NetworkController;
 
 import java.io.IOException;
-import java.util.Date;
 
 /**
  * This example code demonstrates how to perform serial communications using the Raspberry Pi.
@@ -47,7 +43,7 @@ public class App {
     public static void main(String[] args) {
         NetworkController controller = new NetworkController();
         try {
-            controller.runHUHNPController(args);
+            controller.startNetwork(args);
         } catch (InterruptedException | IOException e) {
             System.out.println("Something went wrong: ");
             e.printStackTrace();

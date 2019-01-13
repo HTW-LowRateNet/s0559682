@@ -1,6 +1,6 @@
 package technikMobiler.concurrent;
 
-import technikMobiler.controller.MessageReceiverController;
+import technikMobiler.controller.MessageController;
 import technikMobiler.controller.SenderController;
 
 import java.util.Scanner;
@@ -9,11 +9,11 @@ public class UserInputListener implements Runnable {
 
 	private SenderController sender;
 
-    private MessageReceiverController messageReceiverController;
+    private MessageController messageController;
 
 	public UserInputListener(SenderController sender) {
 		this.sender = sender;
-		this.messageReceiverController = new MessageReceiverController(this.sender);
+		this.messageController = new MessageController(this.sender);
 	}
 
 	@Override
@@ -24,7 +24,7 @@ public class UserInputListener implements Runnable {
                 String userinput = inputReader.next();
                 System.out.println("User typed: " + userinput);
                 sender.sendATCommand(userinput);
-//                messageReceiverController.parseIncoming(userinput);
+//                messageController.parseIncoming(userinput);
                 System.out.println();
             }
             inputReader.close();

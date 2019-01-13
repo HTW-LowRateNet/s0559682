@@ -5,10 +5,13 @@ import com.pi4j.io.serial.SerialFactory;
 import com.pi4j.util.Console;
 import technikMobiler.concurrent.CheckingMessageDB;
 import technikMobiler.concurrent.IncomingMessageListener;
+import technikMobiler.concurrent.MessageHandler;
 import technikMobiler.concurrent.UserInputListener;
 import technikMobiler.config.SerialConfigurator;
 
 import java.io.IOException;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 public class NetworkController {
 
@@ -47,7 +50,7 @@ public class NetworkController {
      * @throws InterruptedException
      * @throws IOException
      */
-    public void runHUHNPController(String[] args) throws InterruptedException, IOException {
+    public void startNetwork(String[] args) throws InterruptedException, IOException {
 
         console.title("<-- HUHN-P Project -->", "Technik Mobiler Systeme");
 
@@ -58,7 +61,9 @@ public class NetworkController {
         configurator.configureSerial(args);
 
         // create and register the serial data listener
-        Thread incomingMessageListener = new Thread(new IncomingMessageListener(serial, senderController));
+        BlockingQueue<String> messageQueue = new ArrayBlockingQueue<>(300);
+        Thread incomingMessageListener = new Thread(new IncomingMessageListener(serial, senderController, messageQueue));
+        Thread messageHandler = new Thread(new MessageHandler(senderController, messageQueue));
         Thread userInputListener = new Thread(new UserInputListener(senderController));
         Thread checkingMessageDB = new Thread(new CheckingMessageDB());
         incomingMessageListener.start();

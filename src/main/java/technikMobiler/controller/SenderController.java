@@ -55,12 +55,12 @@ public class SenderController {
      */
     public synchronized void discoverCoordinator() {
         try {
-            System.out.println("Is there a coordinator?");
+            System.out.println("Is there a coordinator asked by Manuel?");
             Message coordinatorDiscoveryMessage;
             if(multihopBean.getTempAddress() != null) {
-                coordinatorDiscoveryMessage = new Message(MessageCode.CDIS, generateMessageID(), this.multihopBean.getTempAddress(), "FFFF", "Is there a coordinator");
+                coordinatorDiscoveryMessage = new Message(MessageCode.CDIS, generateMessageID(), this.multihopBean.getTempAddress(), "FFFF", "Is there a coordinator asked by Manuel");
             } else {
-                coordinatorDiscoveryMessage = new Message(MessageCode.CDIS, generateMessageID(), this.multihopBean.getPermanentAddress(), "FFFF", "Is there a coordinator");
+                coordinatorDiscoveryMessage = new Message(MessageCode.CDIS, generateMessageID(), this.multihopBean.getPermanentAddress(), "FFFF", "Is there a coordinator asked by Manuel");
             }
             System.out.println("discoveryCoordinator message " + coordinatorDiscoveryMessage);
             Thread.sleep(2000);
@@ -73,10 +73,10 @@ public class SenderController {
 
     public synchronized void sendCoordinatorKeepAlive() {
         try {
-            Message imTheCaptainMessage = new Message(MessageCode.ALIV, generateMessageID(), this.multihopBean.getPermanentAddress(),"FFFF" , "I am the coordinator");
+            Message imTheCaptainMessage = new Message(MessageCode.ALIV, generateMessageID(), this.multihopBean.getPermanentAddress(),"FFFF" , "I am the coordinator send by Manuel");
             Thread.sleep(5000);
             sendMessageHelper(imTheCaptainMessage);
-        } catch (InterruptedException e) {
+        } catch (Exception e) {
             System.err.println(e.getCause());
         }
     }
@@ -84,9 +84,9 @@ public class SenderController {
     public void sendAddressAcknowledgment() {
         try {
             Message ackMessage = new Message(MessageCode.AACK, generateMessageID(), this.multihopBean.getPermanentAddress(),"FFFF", null);
-            Thread.sleep(3000);
+//            Thread.sleep(3000);
             sendMessageHelper(ackMessage);
-        } catch (InterruptedException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -98,9 +98,9 @@ public class SenderController {
             hexAddress = AddressHelper.convertToPaddedHex(hexAddress);
             System.out.println("New Address is: " + hexAddress);
             Message messageWithPermanentAddres = new Message(MessageCode.ADDR, generateMessageID(), this.multihopBean.getPermanentAddress(), tempAddressFromNode, hexAddress);
-            Thread.sleep(2000);
+//            Thread.sleep(2000);
             sendMessageHelper(messageWithPermanentAddres);
-        } catch (InterruptedException e) {
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
 
@@ -109,10 +109,10 @@ public class SenderController {
     public void sendNetworkReset() {
         try {
             Message netWorkReset = new Message(MessageCode.NRST, generateMessageID(), this.multihopBean.getTempAddress(), "FFFF", null);
-            Thread.sleep(3000);
+//            Thread.sleep(3000);
             this.sendMessageHelper(netWorkReset);
             System.out.println("Network has to be resetted");
-        } catch (InterruptedException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -121,10 +121,10 @@ public class SenderController {
     public void requestPermanentAddress() {
         try {
             Message giveMePermanentAddress = new Message(MessageCode.ADDR, generateMessageID(), this.multihopBean.getTempAddress(), "FFFF", null);
-            Thread.sleep(3000);
+//            Thread.sleep(3000);
             this.sendMessageHelper(giveMePermanentAddress);
             System.out.println("Requesting a permanent Address for myself from Coordiantor");
-        } catch (InterruptedException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
