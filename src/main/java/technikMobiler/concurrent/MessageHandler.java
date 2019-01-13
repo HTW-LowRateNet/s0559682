@@ -17,7 +17,6 @@ public class MessageHandler implements Runnable {
     }
 
 
-
     @Override
     public void run() {
         while (true) {

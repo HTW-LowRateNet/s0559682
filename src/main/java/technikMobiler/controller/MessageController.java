@@ -35,16 +35,7 @@ public class MessageController {
                     }
                 } else {
                     try {
-                        String[] temp = data.split(",");
-                        String[] newMessage = new String[7];
-                        newMessage[0] = temp[3];
-                        newMessage[1] = temp[4];
-                        newMessage[2] = temp[5];
-                        newMessage[3] = temp[6];
-                        newMessage[4] = temp[7];
-                        newMessage[5] = temp[8];
-                        newMessage[6] = temp[9];
-                        Message message = new Message(newMessage);
+                        Message message = converToMessage(data);
                         System.out.println("Die reingekommenen Daten in message umgewandelt: " + message.toString());
                         if (message.getCode().equals("ALIV")){
                             System.out.println("IM ALIVE BLOCK");
@@ -91,6 +82,20 @@ public class MessageController {
                 }
             }
 
+    }
+
+    private Message converToMessage(String data) {
+        String[] temp = data.split(",");
+        String[] newMessage = new String[7];
+        newMessage[0] = temp[3];
+        newMessage[1] = temp[4];
+        newMessage[2] = temp[5];
+        newMessage[3] = temp[6];
+        newMessage[4] = temp[7];
+        newMessage[5] = temp[8];
+        newMessage[6] = temp[9];
+        Message message = new Message(newMessage);
+        return message;
     }
 
     private void handleNRSTRequest() {
