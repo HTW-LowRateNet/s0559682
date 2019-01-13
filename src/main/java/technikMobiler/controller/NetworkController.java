@@ -30,6 +30,7 @@ public class NetworkController {
     final Serial serial = SerialFactory.createInstance(); // create an instance of the serial communications
     final SenderController senderController = new SenderController(serial);// create an instance of the MultihopBean class
     final SerialConfigurator configurator = new SerialConfigurator(serial, console);
+    final MessageController messageController = new MessageController(senderController);
 
     // business logic variables
 //    String address; // Current address of this node
@@ -62,13 +63,14 @@ public class NetworkController {
 
         // create and register the serial data listener
         BlockingQueue<String> messageQueue = new ArrayBlockingQueue<>(300);
-        Thread incomingMessageListener = new Thread(new IncomingMessageListener(serial, senderController, messageQueue));
-        Thread messageHandler = new Thread(new MessageHandler(senderController, messageQueue));
+        Thread incomingMessageListener = new Thread(new IncomingMessageListener(serial, messageQueue));
+        Thread messageHandler = new Thread(new MessageHandler(messageController, messageQueue));
         Thread userInputListener = new Thread(new UserInputListener(senderController));
         Thread checkingMessageDB = new Thread(new CheckingMessageDB());
         incomingMessageListener.start();
         userInputListener.start();
         checkingMessageDB.start();
+        messageHandler.start();
 
         // start initial congfiguration of module and set own temporary address
         senderController.configureModule();

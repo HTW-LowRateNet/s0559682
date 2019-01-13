@@ -24,7 +24,7 @@ public class UserInputListener implements Runnable {
                 String userinput = inputReader.next();
                 System.out.println("User typed: " + userinput);
                 sender.sendATCommand(userinput);
-//                messageController.parseIncoming(userinput);
+//                messageController.handleMessage(userinput);
                 System.out.println();
             }
             inputReader.close();

@@ -12,13 +12,10 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class IncomingMessageListener implements Runnable {
 
 	private Serial serial;
-	private SenderController senderController;
-	private MessageController messageController;
 	private BlockingQueue<String> messageQueue;
-	private SerialDataEvent event;
-	public IncomingMessageListener(Serial serial, SenderController senderController, BlockingQueue<String> blockingQueue) {
+
+	public IncomingMessageListener(Serial serial, BlockingQueue<String> blockingQueue) {
 		this.serial = serial;
-		this.senderController = senderController;
 		this.messageQueue = blockingQueue;
 	}
 
@@ -42,10 +39,8 @@ public class IncomingMessageListener implements Runnable {
 						if(serial.available() > 0) {
 							System.out.println("[Serial input] " + event.getAsciiString());
 							System.out.println("im parsing block");
-							messageController.parseIncoming(event.getAsciiString().toString());
+							messageQueue.put(event.getAsciiString());
 						}
-						Thread.sleep(2000);
-//						NetworkController.lock1.notify();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

@@ -14,7 +14,7 @@ public class MessageController {
         this.senderController = senderController;
     }
 
-    public void parseIncoming(String data) {
+    public void handleMessage(String data) {
         countForNewAddressrequest = countForNewAddressrequest + 1;
         if(countForNewAddressrequest == 100) {
             requestedAnAddress = false;
