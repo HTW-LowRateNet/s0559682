@@ -5,13 +5,13 @@ import technikMobiler.controller.MessageController;
 import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 
-public class MessageHandler implements Runnable {
+public class MessageQueueHandler implements Runnable {
 
 
     private MessageController messageController;
-    private Queue<String> messageQueue;
+    private BlockingQueue<String> messageQueue;
 
-    public MessageHandler(MessageController messageController, BlockingQueue<String> blockingQueue) {
+    public MessageQueueHandler(MessageController messageController, BlockingQueue<String> blockingQueue) {
         this.messageController = messageController;
         this.messageQueue = blockingQueue;
     }
@@ -23,6 +23,8 @@ public class MessageHandler implements Runnable {
             synchronized (messageController) {
                 String message = messageQueue.poll();
                 if(message != null) {
+                    System.out.println("Warteschlangenlaenge: " + messageQueue.size());
+                    System.out.println("Genommene Nachricht: " + message);
                     messageController.handleMessage(message);
                 }
             }

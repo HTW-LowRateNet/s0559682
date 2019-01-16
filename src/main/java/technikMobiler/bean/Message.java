@@ -39,7 +39,7 @@ public class Message {
 
     @Override
     public String toString() {
-        return code +","+ messageId +","+ timeToLive +","+ currentHops +"," + sender + ","+ targetAddress + "," + payload + ",";
+        return code +","+ messageId +","+ timeToLive +","+ currentHops +"," + sender + ","+ targetAddress + "," + payload;
     }
 
 

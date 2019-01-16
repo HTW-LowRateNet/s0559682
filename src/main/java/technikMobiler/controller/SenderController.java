@@ -16,21 +16,13 @@ public class SenderController {
     private Serial serial;
     public static Boolean preparedToSend = false;
     private boolean tempAddress = false;
-    private AddressDBController addressDBController;
     private volatile boolean coordinatorPresent = false;
 
     public SenderController(Serial serial) {
         this.serial = serial;
-        this.addressDBController = AddressDBController.getSingleInstance();
         this.multihopBean = new MultihopBean();
     }
 
-
-    /**
-     * method that sets permanent address of the module to addr
-     * @param addr permanent address
-     * @return address
-     */
     protected void setPermanentAddress(String addr) {
         String address;
         synchronized (NetworkController.lock1) {
@@ -50,10 +42,7 @@ public class SenderController {
     }
 
 
-    /**
-     * method to discover the PAN coordinator
-     */
-    public synchronized void discoverCoordinator() {
+    public synchronized void findCoordinator() {
         try {
             System.out.println("Is there a coordinator asked by Manuel?");
             Message coordinatorDiscoveryMessage;
@@ -71,7 +60,7 @@ public class SenderController {
 
     }
 
-    public synchronized void sendCoordinatorKeepAlive() {
+    public synchronized void sendCoordinatorIsStillAlive() {
         try {
             Message imTheCaptainMessage = new Message(MessageCode.ALIV, generateMessageID(), this.multihopBean.getPermanentAddress(),"FFFF" , "I am the coordinator send by Manuel");
             Thread.sleep(5000);
@@ -133,10 +122,7 @@ public class SenderController {
         this.sendMessageHelper(message);
     }
 
-    /**
-     * helper method to send HUHNP messages
-     * @param message
-     */
+
     private void sendMessageHelper(Message message) {
         try {
             int messageLength = message.toString().length();
@@ -172,10 +158,6 @@ public class SenderController {
 
     }
 
-
-    /**
-     * method to send AT commands directly to the module
-     */
     public void sendATCommand(String command) {
         try {
             serial.write(command);
@@ -190,21 +172,13 @@ public class SenderController {
         }
     }
 
-    /**
-     * messageID generator
-     * @return
-     */
-    // TODO Generate smarter message ID
     private String generateMessageID () {
         Random random = new Random();
         Integer number = random.nextInt(8999)+1000;
         return number.toString();
     }
 
-    /**
-     * configures the module initially on startup.
-     * @throws InterruptedException
-     */
+
     protected void configureModule() throws InterruptedException {
         synchronized (NetworkController.lock1) {
             this.sendATCommand("AT+CFG=433000000,20,9,10,1,1,0,0,0,0,3000,8,4");

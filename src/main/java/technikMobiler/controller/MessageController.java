@@ -7,7 +7,7 @@ public class MessageController {
 
     public static boolean requestedAnAddress = false;
     private SenderController senderController;
-    public static int countForNewAddressrequest = 0;
+    public static volatile int countForNewAddressrequest = 0;
 
 
     public MessageController(SenderController senderController) {
@@ -15,63 +15,33 @@ public class MessageController {
     }
 
     public void handleMessage(String data) {
+        System.out.println("Counter für neue Adresseanfrage: " + countForNewAddressrequest);
+        System.out.println("Bin ich Koordinator?: " + senderController.getMultihopBean().isCoordinator());
         countForNewAddressrequest = countForNewAddressrequest + 1;
-        if(countForNewAddressrequest == 100) {
+        if(countForNewAddressrequest > 10 && senderController.getMultihopBean().getPermanentAddress() == null) {
             requestedAnAddress = false;
+            countForNewAddressrequest = 0;
         }
-            System.out.println("Daten die reingekommen sind: " + data);
+            System.out.println("Daten im MessageController sind: " + data);
             if(data == null) {
                 System.out.println("data was null");
             } else {
                 if (data.contains("AT")){
-                    if(data.contains("AT,OK")) {
-                        SenderController.preparedToSend = true;
-                        synchronized (NetworkController.lock1) {
-                            NetworkController.lock1.notify();
-                            //schreiben
-                        }
-                    } if(data.contains("AT,SENDED")) {
-                        System.out.println("AT SENDED Block  " + data);
-                    }
+                    this.handleATMessage(data);
                 } else {
                     try {
                         Message message = converToMessage(data);
                         System.out.println("Die reingekommenen Daten in message umgewandelt: " + message.toString());
+                        System.out.println("Eigene permanente Adresse: " + senderController.getMultihopBean().getPermanentAddress());
                         if (message.getCode().equals("ALIV")){
                             System.out.println("IM ALIVE BLOCK");
                             this.handleALIVRequest(message);
-                        } else if(!messageIsForMe(message)) {
-                            if(senderController.getMultihopBean().getPermanentAddress() != null) {
-                                System.out.println("Im forwarding block");
-                                this.handleForwardingProcess(message);
-                            } else {
-                                System.out.println("not allowed to forward");
-                            }
+                        } else if(message.getCode().equals("NRST")) {
+                            System.out.println("IM NRST BLOCK");
+                        }else if(!messageIsForMe(message)) {
+                            this.handleMessageIsNotForMe(message);
                         } else {
-                            System.out.println("Im restlichen Block");
-                            if (message.getCode().equals("CDIS") && senderController.getMultihopBean().isCoordinator()){
-                                System.out.println("Im CDIS BLOCK");
-                                this.handleCDISRequest(message);
-                            }
-
-                            if(message.getCode().equals("MSSG")) {
-                                System.out.println("IM MSSG BLOCK");
-                                handleMSSGRequest(message);
-                            }
-
-                            if(message.getCode().equals("ADDR")) {
-                                System.out.println("IM ADDR BLOCK");
-                                this.handleADDRRequest(message);
-                            }
-
-                            if(message.getCode().equals("AACK")) {
-                                System.out.println("IM AACK BLOCK");
-                                this.handleAACKRequest(message);
-                            }
-
-                            if(message.getCode().equals("NRST")) {
-                                System.out.println("IM NRST BLOCK");
-                            }
+                            this.handleIfMessageIsForMe(message);
                         }
                     } catch (ArrayIndexOutOfBoundsException e) {
                         System.out.println(e.getCause());
@@ -82,6 +52,49 @@ public class MessageController {
                 }
             }
 
+    }
+
+    private void handleIfMessageIsForMe(Message message) {
+        System.out.println("Im restlichen Block");
+        if (message.getCode().equals("CDIS") && senderController.getMultihopBean().isCoordinator()){
+            System.out.println("Im CDIS BLOCK");
+            this.handleCDISRequest(message);
+        }
+
+        if(message.getCode().equals("MSSG")) {
+            System.out.println("IM MSSG BLOCK");
+            handleMSSGRequest(message);
+        }
+
+        if(message.getCode().equals("ADDR")) {
+            System.out.println("IM ADDR BLOCK");
+            this.handleADDRRequest(message);
+        }
+
+        if(message.getCode().equals("AACK")) {
+            System.out.println("IM AACK BLOCK");
+            this.handleAACKRequest(message);
+        }
+    }
+
+    private void handleATMessage(String data) {
+        if(data.contains("AT,OK")) {
+            SenderController.preparedToSend = true;
+            synchronized (NetworkController.lock1) {
+                NetworkController.lock1.notify();
+            }
+        } if(data.contains("AT,SENDED")) {
+            System.out.println("AT SENDED Block  " + data);
+        }
+    }
+
+    private void handleMessageIsNotForMe(Message message) {
+        if(senderController.getMultihopBean().getPermanentAddress() != null) {
+            System.out.println("Im forwarding block");
+            this.handleForwardingProcess(message);
+        } else {
+            System.out.println("not allowed to forward");
+        }
     }
 
     private Message converToMessage(String data) {
@@ -109,7 +122,7 @@ public class MessageController {
 
     private void handleCDISRequest(Message message) {
         System.out.println(message.getSender() + ": joined");
-        senderController.sendCoordinatorKeepAlive();
+        senderController.sendCoordinatorIsStillAlive();
     }
 
     private void handleALIVRequest(Message message) {

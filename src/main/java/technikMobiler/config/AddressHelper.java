@@ -34,7 +34,7 @@ public class AddressHelper {
         Random rand = new Random();
         int myRandomNumber = rand.nextInt(temporaryAddressesUpperBound-temporaryAddressesLowerBound) + temporaryAddressesLowerBound; // Generates a random number between 0011 and 00FF (00EE+0011)
         String addr = Integer.toHexString(myRandomNumber);
-        addr = convertToPaddedHex(addr);
+        addr = convertToPaddedHex(addr.toUpperCase());
         System.out.printf("own temp addr: " + addr); // Prints it in hex, such as "0x14"
         // or....
         return addr; // Random hex number in result
