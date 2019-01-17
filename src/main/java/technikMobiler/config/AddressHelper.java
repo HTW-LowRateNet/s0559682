@@ -26,18 +26,13 @@ public class AddressHelper {
     private static AddressDBController addressDBController = AddressDBController.getSingleInstance();
 
 
-    /**
-     * this method is used by the Node on startup. It is necessary to request a permanent address.
-     * @return
-     */
     public static String createTemporaryNodeAddress() {
         Random rand = new Random();
         int myRandomNumber = rand.nextInt(temporaryAddressesUpperBound-temporaryAddressesLowerBound) + temporaryAddressesLowerBound; // Generates a random number between 0011 and 00FF (00EE+0011)
         String addr = Integer.toHexString(myRandomNumber);
         addr = convertToPaddedHex(addr.toUpperCase());
-        System.out.printf("own temp addr: " + addr); // Prints it in hex, such as "0x14"
-        // or....
-        return addr; // Random hex number in result
+        System.out.printf("own temp addr: " + addr);
+        return addr;
     }
 
 
@@ -45,9 +40,6 @@ public class AddressHelper {
         Integer lastSentAddress = addressDBController.getLastAddress();
         System.out.println("last address which was saved: " + Integer.toHexString(lastSentAddress));
         int newAddress = lastSentAddress + adder;
-//        String hex = Integer.toHexString(newAddress);
-//        String paddedHexString = convertToPaddedHex(hex);
-//        System.out.println("new Address " + paddedHexString);
         return newAddress;
     }
 

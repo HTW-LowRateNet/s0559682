@@ -17,12 +17,10 @@ public enum MessageCode {
 
     protected String code;
 
-    // Constructor
     MessageCode(String s) {
         this.code = s;
     };
 
-    //
     public String code() {
         return code;
     }
