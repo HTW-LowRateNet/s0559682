@@ -15,13 +15,14 @@ public class MessageController {
     }
 
     public void handleMessage(String data) {
-        System.out.println("Counter für neue Adresseanfrage: " + countForNewAddressrequest);
-        System.out.println("Bin ich Koordinator?: " + senderController.getMultihopBean().isCoordinator());
-        countForNewAddressrequest = countForNewAddressrequest + 1;
-        if(countForNewAddressrequest > 10 && senderController.getMultihopBean().getPermanentAddress() == null) {
-            requestedAnAddress = false;
-            countForNewAddressrequest = 0;
-        }
+        synchronized (senderController) {
+            System.out.println("Counter für neue Adresseanfrage: " + countForNewAddressrequest);
+            System.out.println("Bin ich Koordinator?: " + senderController.getMultihopBean().isCoordinator());
+            countForNewAddressrequest = countForNewAddressrequest + 1;
+            if(countForNewAddressrequest > 10 && senderController.getMultihopBean().getPermanentAddress() == null) {
+                requestedAnAddress = false;
+                countForNewAddressrequest = 0;
+            }
             System.out.println("Daten im MessageController sind: " + data);
             if(data == null) {
                 System.out.println("data was null");
@@ -51,7 +52,7 @@ public class MessageController {
                     }
                 }
             }
-
+        }
     }
 
     private void handleIfMessageIsForMe(Message message) {

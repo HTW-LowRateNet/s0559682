@@ -9,7 +9,6 @@
 /Users/Manuel/Documents/HTW/fuenfteSemester/technikMobiler/projekt2/s0559682/src/main/java/technikMobiler/controller/SenderController.java
 /Users/Manuel/Documents/HTW/fuenfteSemester/technikMobiler/projekt2/s0559682/src/main/java/technikMobiler/module/AcknowledgmentDB.java
 /Users/Manuel/Documents/HTW/fuenfteSemester/technikMobiler/projekt2/s0559682/src/main/java/technikMobiler/config/AddressHelper.java
-/Users/Manuel/Documents/HTW/fuenfteSemester/technikMobiler/projekt2/s0559682/src/main/java/technikMobiler/controller/TempController.java
 /Users/Manuel/Documents/HTW/fuenfteSemester/technikMobiler/projekt2/s0559682/src/main/java/technikMobiler/concurrent/IncomingMessageListener.java
 /Users/Manuel/Documents/HTW/fuenfteSemester/technikMobiler/projekt2/s0559682/src/main/java/technikMobiler/concurrent/MessageQueueHandler.java
 /Users/Manuel/Documents/HTW/fuenfteSemester/technikMobiler/projekt2/s0559682/src/main/java/technikMobiler/concurrent/CheckingMessageDB.java
